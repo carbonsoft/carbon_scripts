@@ -8,28 +8,25 @@ UPDATE_VERSION=${3:-cur}
 HOST=update5.carbonsoft.ru
 PORT=555
 GRUBCONF=/boot/grub/grub.conf
-DST_RO_IMAGE=$HOST::filearchive/$UPDATE_PRODUCT/$UPDATE_VERSION/base/ro_image_$UPDATE_BRANCH/
-exclude='--exclude=lib/modules/ --exclude=lib/firmware/ --exclude=boot/'
-exclude="$exclude $(echo $exclude | sed 's|=|&addon/|g')" # + addon/ to all
 
 echo "# Скачиваем и устанавливаем контейнеры"
-mkdir -p /app/base/mnt/{var,log,var/cfg} /var/backup/
-
 download() {
 	rsync -a --progress -r --port $PORT $@
 }
-
-download $exclude $DST_RO_IMAGE/addon/ /app/base/
+exclude='--exclude=lib/modules/ --exclude=lib/firmware/ --exclude=boot/'
+exclude="$exclude $(echo $exclude | sed 's|=|&addon/|g')" # + addon/ to all
+mkdir -p /app/base/mnt/{var,log,var/cfg} /var/backup/
 download $$HOST::filearchive/profiles/$UPDATE_PRODUCT /tmp/app_list
-
 for app in auth $(</tmp/app_list); do
-	download $exclude $HOST::filearchive/$UPDATE_PRODUCT/$UPDATE_VERSION/$app/ro_image_$UPDATE_BRANCH/ /app/$app/
+	[ "$app" = 'base' ] && addon='/addon/' || addon=''
+	download $exclude $HOST::filearchive/$UPDATE_PRODUCT/$UPDATE_VERSION/$app/ro_image_$UPDATE_BRANCH/$addon /app/$app/
 done
 
 echo "# Устанавливаем пару необходимых вещей"
 rpm -i "http://mirror.yandex.ru/epel/6/i386/epel-release-6-8.noarch.rpm" || true
 sed -e 's/https/http/g' -i /etc/yum.repos.d/epel.repo
 sed -e 's/https/http/g' -i /etc/yum.repos.d/epel-testing.repo
+sed -e 's|Defaults    requiretty|#&|g; s|# %wheel|%wheel|g' -i /etc/sudoers
 yum -y install conntrack-tools mod_wsgi python-markdown
 
 echo "# Обновляемся, чтобы навести лоск"
