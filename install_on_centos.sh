@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# run: curl -L https://raw.githubusercontent.com/carbonsoft/carbon_scripts/master/install_on_centos.sh | bash
+
 set -eux
 
 UPDATE_PRODUCT=${1:-Billing}
