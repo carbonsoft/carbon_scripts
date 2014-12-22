@@ -37,14 +37,13 @@ for app in base auth $(</tmp/app_list); do
 	/app/$app/service build
 done
 
+# костыль, надо разобраться с var и skelet
+rsync -a -v -r /app/asr_billing/{skelet/var/lib/firebird/system/,/var/lib/firebird/system}
+
 echo "# Обновляемся, чтобы навести лоск"
 ( cd /boot; git init; git add .; git commit -m "initial commit" )
-( cd /lib/modules/; git init; git add .; git commit -m "initial commit" )
-md5sum /app/base/usr/local/bin/update_fast.sh > /tmp/md5sum
 /app/base/usr/local/bin/update.sh $UPDATE_PRODUCT $UPDATE_BRANCH $UPDATE_VERSION
-( cd /boot; git add .; git commit -m "after carbon update" )
-( cd /lib/modules/; git init; git add .; git commit -m "after carbon update" )
-md5sum /app/base/usr/local/bin/update_fast.sh >> /tmp/md5sum
+
 
 echo "# Отключаем selinux в grub + делаем бэкап конфига)" 
 cat $GRUBCONF > $GRUBCONF.$(md5sum $GRUBCONF | cut -d ' ' -f1)
