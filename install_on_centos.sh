@@ -24,7 +24,7 @@ for app in auth $(</tmp/app_list); do
 		cp -av /app/{auth,$app}/usr/lib/locale/locale-archive
 		cp -av /app/auth/usr/share/locale/* /app/$app/usr/share/locale/
 	fi
-	rsync -a --progress -r --port $PORT $exclude $HOST::filearchive/$UPDATE_PRODUCT/$UPDATE_VERSION/$app/ro_image_$UPDATE_BRANCH/$addon /app/$app/
+	rsync -a -v -r --port $PORT $exclude $HOST::filearchive/$UPDATE_PRODUCT/$UPDATE_VERSION/$app/ro_image_$UPDATE_BRANCH/$addon /app/$app/
 done
 
 echo "# Устанавливаем пару необходимых вещей"
