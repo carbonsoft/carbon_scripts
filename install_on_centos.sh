@@ -25,7 +25,7 @@ rpm -i "http://mirror.yandex.ru/epel/6/i386/epel-release-6-8.noarch.rpm" || true
 sed -e 's/https/http/g' -i /etc/yum.repos.d/epel.repo
 sed -e 's/https/http/g' -i /etc/yum.repos.d/epel-testing.repo
 sed -e 's|Defaults    requiretty|#&|g; s|# %wheel|%wheel|g' -i /etc/sudoers
-yum -y install conntrack-tools mod_wsgi python-markdown
+yum -y install conntrack-tools mod_wsgi python-markdown dialog
 
 echo "# Обновляемся, чтобы навести лоск"
 /app/base/usr/local/bin/update.sh $UPDATE_PRODUCT $UPDATE_BRANCH $UPDATE_VERSION
