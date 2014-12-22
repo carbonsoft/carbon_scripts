@@ -25,10 +25,15 @@ rpm -i "http://mirror.yandex.ru/epel/6/i386/epel-release-6-8.noarch.rpm" || true
 sed -e 's/https/http/g' -i /etc/yum.repos.d/epel.repo
 sed -e 's/https/http/g' -i /etc/yum.repos.d/epel-testing.repo
 sed -e 's|Defaults    requiretty|#&|g; s|# %wheel|%wheel|g' -i /etc/sudoers
-yum -y install conntrack-tools mod_wsgi python-markdown dialog
+yum -y install conntrack-tools mod_wsgi python-markdown dialog git
+for app in base auth $(</tmp/app_list); do
+	/app/$app/service restart
+done
 
 echo "# Обновляемся, чтобы навести лоск"
+( cd /boot; git init; git add .; git commit -m "initial commit" )
 /app/base/usr/local/bin/update.sh $UPDATE_PRODUCT $UPDATE_BRANCH $UPDATE_VERSION
+( cd /boot; git add .; git commit -m "after carbon update" )
 
 echo "# Отключаем selinux в grub + делаем бэкап конфига)" 
 cat $GRUBCONF > $GRUBCONF.$(md5sum $GRUBCONF | cut -d ' ' -f1)
