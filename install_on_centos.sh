@@ -10,16 +10,14 @@ PORT=555
 GRUBCONF=/boot/grub/grub.conf
 
 echo "# Скачиваем и устанавливаем контейнеры"
-download() {
-	rsync -a --progress -r --port $PORT $@
-}
+
 exclude='--exclude=lib/modules/ --exclude=lib/firmware/ --exclude=boot/'
 exclude="$exclude $(echo $exclude | sed 's|=|&addon/|g')" # + addon/ to all
 mkdir -p /app/base/mnt/{var,log,var/cfg} /var/backup/
-download $$HOST::filearchive/profiles/$UPDATE_PRODUCT /tmp/app_list
+rsync -a --progress -r --port $PORT $HOST::filearchive/profiles/$UPDATE_PRODUCT /tmp/app_list
 for app in auth $(</tmp/app_list); do
 	[ "$app" = 'base' ] && addon='/addon/' || addon=''
-	download $exclude $HOST::filearchive/$UPDATE_PRODUCT/$UPDATE_VERSION/$app/ro_image_$UPDATE_BRANCH/$addon /app/$app/
+	rsync -a --progress -r --port $PORT $exclude $HOST::filearchive/$UPDATE_PRODUCT/$UPDATE_VERSION/$app/ro_image_$UPDATE_BRANCH/$addon /app/$app/
 done
 
 echo "# Устанавливаем пару необходимых вещей"
