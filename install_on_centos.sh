@@ -13,7 +13,6 @@ PORT=555
 GRUBCONF=/boot/grub/grub.conf
 
 echo "# Скачиваем и устанавливаем контейнеры"
-
 exclude='--exclude=lib/modules/ --exclude=lib/firmware/ --exclude=boot/'
 exclude="$exclude $(echo $exclude | sed 's|=|&addon/|g')" # + addon/ to all
 mkdir -p /app/base/mnt/{var,log,var/cfg} /var/backup/
@@ -25,7 +24,7 @@ for app in $(</tmp/app_list); do
 		cp -av /app/{auth,$app}/usr/lib/locale/locale-archive
 		cp -av /app/auth/usr/share/locale/* /app/$app/usr/share/locale/
 	fi
-	rsync -a -v -r --port $PORT $exclude $HOST::filearchive/$UPDATE_PRODUCT/$UPDATE_VERSION/$app/ro_image_$UPDATE_BRANCH/$addon /app/$app/ | cut -d '/' -f 1,2 | uniq
+	rsync -a -v -r --port $PORT $exclude $HOST::filearchive/$UPDATE_PRODUCT/$UPDATE_VERSION/$app/ro_image_$UPDATE_BRANCH/$addon /app/$app/ | cut -d '/' -f 1 | uniq
 done
 
 echo "# Устанавливаем пару необходимых вещей"
@@ -35,13 +34,10 @@ sed -e 's/https/http/g' -i /etc/yum.repos.d/epel-testing.repo
 sed -e 's|Defaults    requiretty|#&|g; s|# %wheel|%wheel|g' -i /etc/sudoers
 yum -y install conntrack-tools mod_wsgi python-markdown dialog git python-suds
 for app in base auth $(</tmp/app_list); do
-	/app/$app/service stop || true
-	/app/$app/service destroy || true
-	/app/$app/service build || true
-	/app/$app/service start || true
+	for action in stop destroy build start; do
+		/app/$app/service $action || true
+	done
 done
-
-# костыль, надо разобраться с var и skelet
 rsync -a -v -r /app/asr_billing/{skelet/var/lib/firebird/system/,/var/lib/firebird/system}
 
 echo "# Обновляемся, чтобы навести лоск"
