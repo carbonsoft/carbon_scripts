@@ -17,7 +17,7 @@ exclude='--exclude=lib/modules/ --exclude=lib/firmware/ --exclude=boot/'
 exclude="$exclude $(echo $exclude | sed 's|=|&addon/|g')" # + addon/ to all
 mkdir -p /app/base/mnt/{var,log,var/cfg} /var/backup/
 rsync -a --progress -r --port $PORT $HOST::filearchive/profiles/$UPDATE_PRODUCT /tmp/app_list
-for app in auth $(</tmp/app_list); do
+for app in $(</tmp/app_list); do
 	[ "$app" = 'base' ] && addon='/addon/' || addon=''
 	if [ -f /app/auth/usr/lib/locale/locale-archive ] && [ "$app" != auth ]; then # speedup install, -500mb of traffic
 		mkdir -p /app/$app/usr/lib/locale/ /app/$app/usr/share/locale
