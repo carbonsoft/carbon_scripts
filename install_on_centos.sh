@@ -1,11 +1,12 @@
 #!/bin/bash
 
-# run: curl -L https://raw.githubusercontent.com/carbonsoft/carbon_scripts/master/install_on_centos.sh | bash
+# curl -L https://raw.githubusercontent.com/carbonsoft/carbon_scripts/master/install_on_centos.sh > install.sh
+# bash install.sh Billing oleg cur
 
 set -eux
 
 UPDATE_PRODUCT=${1:-Billing}
-UPDATE_BRANCH=${2:-devel}
+UPDATE_BRANCH=${2:-oleg}
 UPDATE_VERSION=${3:-cur}
 HOST=update5.carbonsoft.ru
 PORT=555
