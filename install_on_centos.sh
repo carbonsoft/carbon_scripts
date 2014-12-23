@@ -46,7 +46,7 @@ rsync -a -v -r /app/asr_billing/{skelet/var/lib/firebird/system/,/var/lib/firebi
 echo "# Обновляемся, чтобы навести лоск"
 ( cd /boot; git init; git add .; git commit -m "initial commit" )
 /app/base/usr/local/bin/update.sh $UPDATE_PRODUCT $UPDATE_BRANCH $UPDATE_VERSION
-
+/app/base/usr/local/bin/update.sh $UPDATE_PRODUCT $UPDATE_BRANCH $UPDATE_VERSION #dont ask why :C
 
 echo "# Отключаем selinux в grub + делаем бэкап конфига)" 
 cat $GRUBCONF > $GRUBCONF.$(md5sum $GRUBCONF | cut -d ' ' -f1)
