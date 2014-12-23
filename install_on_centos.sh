@@ -32,7 +32,7 @@ rpm -i "http://mirror.yandex.ru/epel/6/i386/epel-release-6-8.noarch.rpm" || true
 sed -e 's/https/http/g' -i /etc/yum.repos.d/epel.repo
 sed -e 's/https/http/g' -i /etc/yum.repos.d/epel-testing.repo
 sed -e 's|Defaults    requiretty|#&|g; s|# %wheel|%wheel|g' -i /etc/sudoers
-yum -y install conntrack-tools mod_wsgi python-markdown dialog git
+yum -y install conntrack-tools mod_wsgi python-markdown dialog git python-suds
 for app in base auth $(</tmp/app_list); do
 	/app/$app/service stop || true
 	/app/$app/service destroy || true
