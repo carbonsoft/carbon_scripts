@@ -33,6 +33,8 @@ sed -e 's/https/http/g' -i /etc/yum.repos.d/epel.repo
 sed -e 's/https/http/g' -i /etc/yum.repos.d/epel-testing.repo
 sed -e 's|Defaults    requiretty|#&|g; s|# %wheel|%wheel|g' -i /etc/sudoers
 yum -y install conntrack-tools mod_wsgi python-markdown dialog git python-suds
+
+echo "# рестартанём все контейнеры один раз чтобы обновление работало"
 for app in base auth $(</tmp/app_list); do
 	for action in stop destroy build start; do
 		/app/$app/service $action || true
