@@ -12,6 +12,8 @@ HOST=update5.carbonsoft.ru
 PORT=555
 GRUBCONF=/boot/grub/grub.conf
 
+yum -y install rsync || true
+
 echo "# Скачиваем и устанавливаем контейнеры"
 exclude='--exclude=lib/modules/ --exclude=lib/firmware/ --exclude=boot/'
 exclude="$exclude $(echo $exclude | sed 's|=|&addon/|g')" # + addon/ to all
