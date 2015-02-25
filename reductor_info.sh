@@ -14,7 +14,7 @@ get_rx_bytes() {
 
 main() {
 	if ! [ -n "$(which lspci)" ]; then
-		yum -y install lspci
+		yum -y install pciutils
 	fi
 	clear
 	echo Используемый процессор: $(cpu_count) x $(cpu_model)
