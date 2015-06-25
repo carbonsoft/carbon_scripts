@@ -6,7 +6,7 @@
 set -eux
 
 UPDATE_PRODUCT=${1:-Billing}
-UPDATE_BRANCH=${2:-oleg}
+UPDATE_BRANCH=${2:-pl51}
 UPDATE_VERSION=${3:-cur}
 HOST=update5.carbonsoft.ru
 PORT=555
