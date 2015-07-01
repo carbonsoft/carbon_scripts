@@ -17,7 +17,7 @@ yum -y install rsync || true
 echo "# Скачиваем и устанавливаем контейнеры"
 exclude='--exclude=lib/modules/ --exclude=lib/firmware/ --exclude=boot/'
 exclude="$exclude $(echo $exclude | sed 's|=|&addon/|g')" # + addon/ to all
-mkdir -p /app/base/mnt/{var,log,var/cfg} /var/backup/
+mkdir -p /app/base/mnt/{var,log,var/cfg}
 rsync -a --progress -r --port $PORT $HOST::filearchive/profiles/$UPDATE_PRODUCT /tmp/app_list
 for app in $(</tmp/app_list); do
 	[ "$app" = 'base' ] && addon='/addon/' || addon=''
@@ -34,7 +34,7 @@ rpm -i "http://mirror.yandex.ru/epel/6/i386/epel-release-6-8.noarch.rpm" || true
 sed -e 's/https/http/g' -i /etc/yum.repos.d/epel.repo
 sed -e 's/https/http/g' -i /etc/yum.repos.d/epel-testing.repo
 sed -e 's|Defaults    requiretty|#&|g; s|# %wheel|%wheel|g' -i /etc/sudoers
-yum -y install conntrack-tools mod_wsgi python-markdown dialog git python-suds lsof ntpdate vim mc strace libxslt bind-utils python-virtualenv tcpdump m4
+yum -y install conntrack-tools mod_wsgi python-markdown dialog git python-suds lsof ntpdate vim mc strace libxslt bind-utils python-virtualenv tcpdump m4 ipset
 
 echo "# рестартанём все контейнеры один раз чтобы обновление работало"
 for app in base auth $(</tmp/app_list); do
@@ -46,10 +46,10 @@ rsync -a -v -r /app/asr_billing/{skelet/var/lib/firebird/system/,/var/lib/firebi
 
 echo "# Обновляемся, чтобы навести лоск"
 ( cd /boot; git init; git add .; git commit -m "initial commit" )
-/app/base/usr/local/bin/update.sh $UPDATE_PRODUCT $UPDATE_BRANCH $UPDATE_VERSION || true
-/app/base/usr/local/bin/update.sh $UPDATE_PRODUCT $UPDATE_BRANCH $UPDATE_VERSION || true
-/app/base/usr/local/bin/update.sh $UPDATE_PRODUCT $UPDATE_BRANCH $UPDATE_VERSION || true
-/app/base/usr/local/bin/update.sh $UPDATE_PRODUCT $UPDATE_BRANCH $UPDATE_VERSION #dont ask why :C
+/app/base/usr/local/bin/update.sh $UPDATE_PRODUCT $UPDATE_BRANCH $UPDATE_VERSION --skipcheck || true
+/app/base/usr/local/bin/update.sh $UPDATE_PRODUCT $UPDATE_BRANCH $UPDATE_VERSION --skipcheck || true
+/app/base/usr/local/bin/update.sh $UPDATE_PRODUCT $UPDATE_BRANCH $UPDATE_VERSION --skipcheck || true
+/app/base/usr/local/bin/update.sh $UPDATE_PRODUCT $UPDATE_BRANCH $UPDATE_VERSION --skipcheck #dont ask why :C
 
 echo "# Отключаем selinux в grub + делаем бэкап конфига)" 
 cat $GRUBCONF > $GRUBCONF.$(md5sum $GRUBCONF | cut -d ' ' -f1)
