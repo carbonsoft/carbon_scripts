@@ -30,7 +30,8 @@ if [ "$1" = '-v' ]; then
 fi
 
 if [ "$#" -gt '0' ]; then
-        for url in $@; do               check_url "$url"
+        for url in $@; do
+                check_url "$url"
         done
 
 else
