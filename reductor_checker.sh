@@ -2,6 +2,9 @@
 
 # works only for reductor on centos
 # for reductor on billing check $? after curl instead of stdout
+# usage:
+#       ./reductor_checker.sh http://bad_url1.ru http://bad_url2.ru
+#       ./reductor_checker.sh < /path/to/url.list
 
 _echo() {
         if [ "$VERBOSE" = '1' ]; then
