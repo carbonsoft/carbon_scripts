@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # works only for reductor on centos
-# for reductor on billing check $? after curl
+# for reductor on billing check $? after curl instead of stdout
 
 _echo() {
         if [ "$VERBOSE" = '1' ]; then
@@ -33,9 +33,9 @@ if [ "$#" -gt '0' ]; then
         for url in $@; do
                 check_url "$url"
         done
-
-else
-        while read -r url tmp; do
-                check_url "$url"
-        done
+        exit 0
 fi
+
+while read -r url tmp; do
+        check_url "$url"
+done
