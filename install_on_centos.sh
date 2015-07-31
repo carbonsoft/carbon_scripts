@@ -8,8 +8,8 @@ set -eux
 UPDATE_PRODUCT=${1:-Billing}
 UPDATE_BRANCH=${2:-pl51}
 UPDATE_VERSION=${3:-cur}
-HOST=update5.carbonsoft.ru
-PORT=555
+HOST=${4:-update5.carbonsoft.ru}
+PORT=${5:-873}
 GRUBCONF=/boot/grub/grub.conf
 
 yum -y install rsync || true
@@ -44,10 +44,10 @@ rsync -a -v -r /app/asr_billing/{skelet/var/lib/firebird/system/,/var/lib/firebi
 
 echo "# Обновляемся, чтобы навести лоск"
 ( cd /boot; git init; git add .; git commit -m "initial commit" )
-/app/base/usr/local/bin/update.sh $UPDATE_PRODUCT $UPDATE_BRANCH $UPDATE_VERSION --skipcheck || true
-/app/base/usr/local/bin/update.sh $UPDATE_PRODUCT $UPDATE_BRANCH $UPDATE_VERSION --skipcheck || true
-/app/base/usr/local/bin/update.sh $UPDATE_PRODUCT $UPDATE_BRANCH $UPDATE_VERSION --skipcheck || true
-/app/base/usr/local/bin/update.sh $UPDATE_PRODUCT $UPDATE_BRANCH $UPDATE_VERSION --skipcheck #dont ask why :C
+/app/base/usr/local/bin/update.sh $UPDATE_PRODUCT $UPDATE_BRANCH $UPDATE_VERSION --skipcheck --update-server $HOST:$PORT || true
+/app/base/usr/local/bin/update.sh $UPDATE_PRODUCT $UPDATE_BRANCH $UPDATE_VERSION --skipcheck --update-server $HOST:$PORT || true
+/app/base/usr/local/bin/update.sh $UPDATE_PRODUCT $UPDATE_BRANCH $UPDATE_VERSION --skipcheck --update-server $HOST:$PORT || true
+/app/base/usr/local/bin/update.sh $UPDATE_PRODUCT $UPDATE_BRANCH $UPDATE_VERSION --skipcheck --update-server $HOST:$PORT  #dont ask why :C
 
 echo "# Отключаем selinux в grub + делаем бэкап конфига)" 
 cat $GRUBCONF > $GRUBCONF.$(md5sum $GRUBCONF | cut -d ' ' -f1)
