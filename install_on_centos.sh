@@ -9,7 +9,7 @@ UPDATE_PRODUCT=${1:-Billing}
 UPDATE_BRANCH=${2:-pl51}
 UPDATE_VERSION=${3:-cur}
 HOST=${4:-update5.carbonsoft.ru}
-PORT=${5:-873}
+PORT=${5:-555}
 GRUBCONF=/boot/grub/grub.conf
 
 yum -y install rsync || true
