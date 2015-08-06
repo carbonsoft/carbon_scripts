@@ -59,7 +59,7 @@ __install() {
 }
 
 __get_update_product() {
-	#curl $HOST:8024/products.list > /tmp/products
+	curl $HOST:8024/products.list > /tmp/products
 	num=1
 	echo Выбирите продукт, который хотите установить:
 	while read line; do
