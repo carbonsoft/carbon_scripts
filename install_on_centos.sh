@@ -36,10 +36,10 @@ __install() {
 			/app/$app/service $action || true
 		done
 	done
-	rsync -a -v -r /app/asr_billing/{skelet/var/lib/firebird/system/,/var/lib/firebird/system}
+	[ -d '/app/asr_billing/' ] && rsync -a -v -r /app/asr_billing/{skelet/var/lib/firebird/system/,/var/lib/firebird/system}
 
 	echo "# Обновляемся, чтобы навести лоск"
-	( cd /boot; git init; git add .; git commit -m "initial commit" )
+	[ ! -d '/boot/.git/' ] && ( cd /boot; git init; git add .; git commit -m "initial commit" )
 	/app/base/usr/local/bin/update.sh $INSTALL_PRODUCT $INSTALL_BRANCH $INSTALL_VERSION --skipcheck --update-server $HOST:$PORT || true
 	/app/base/usr/local/bin/update.sh $INSTALL_PRODUCT $INSTALL_BRANCH $INSTALL_VERSION --skipcheck --update-server $HOST:$PORT || true
 	/app/base/usr/local/bin/update.sh $INSTALL_PRODUCT $INSTALL_BRANCH $INSTALL_VERSION --skipcheck --update-server $HOST:$PORT || true
@@ -55,6 +55,11 @@ __install() {
 	done < $GRUBCONF > $GRUBCONF.without_selinux
 	cat $GRUBCONF.without_selinux > $GRUBCONF
 
+	if [ -d '/app/xge' ]; then
+		echo "**********************************************************************"
+		echo "* ВНИМАНИЕ!!!!! Установлен XGE требуется перезагрузка с ядром Carbon *"
+		echo "**********************************************************************"
+	fi
 	echo "Установка завершена, осталось только выполнить reboot"
 }
 
@@ -84,7 +89,8 @@ usage() {
 }
 
 main() {
-	[ "${@//-/}" = 'usage' -o "${@//-/}" = 'help' ] && usage
+	params="${@//-/}"
+	[ "$params" = 'usage' -o "$params" = 'help' ] && usage
 
 	if [ "$#" != 5 ]; then
 		INSTALL_BRANCH=integra
