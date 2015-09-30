@@ -31,6 +31,9 @@ __install() {
 	yum -y install conntrack-tools mod_wsgi python-markdown dialog git python-suds lsof ntpdate vim mc strace libxslt bind-utils python-virtualenv tcpdump m4 ipset
 
 	echo "# рестартанём все контейнеры один раз чтобы обновление работало"
+
+	cp /tmp/app_list /app/base/var/reg/$INSTALL_PRODUCT.profile
+
 	for app in base auth $(</tmp/app_list); do
 		for action in stop destroy build start; do
 			/app/$app/service $action || true
