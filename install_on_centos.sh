@@ -4,6 +4,7 @@
 # bash install.sh Billing oleg cur
 
 set -eu
+export md5=6c117a0ebff1fe744b781654b9429499
 
 __install() {
 	GRUBCONF=/boot/grub/grub.conf
@@ -32,14 +33,14 @@ __install() {
 
 	echo "# рестартанём все контейнеры один раз чтобы обновление работало"
 
-	cp /tmp/app_list /app/base/var/reg/$INSTALL_PRODUCT.profile
-
 	for app in base auth $(</tmp/app_list); do
 		for action in stop destroy build start; do
 			/app/$app/service $action || true
 		done
 	done
 	[ -d '/app/asr_billing/' ] && rsync -a -v -r /app/asr_billing/{skelet/var/lib/firebird/system/,/var/lib/firebird/system}
+	mkdir -p /app/base/var/reg/
+	cp /tmp/app_list /app/base/var/reg/${INSTALL_PRODUCT}.profile
 
 	echo "# Обновляемся, чтобы навести лоск"
 	[ ! -d '/boot/.git/' ] && ( cd /boot; git init; git add .; git commit -m "initial commit" )
