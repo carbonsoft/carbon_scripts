@@ -87,7 +87,7 @@ __get_update_product() {
 
 usage() {
 	echo $0 [ INSTALL_PRODUCT INSTALL_BRANCH INSTALL_VERSION HOST PORT ]
-	echo Example: $0 Billing devel cur update5.carbonsoft.ru 555
+	echo Example: $0 Billing devel cur update51.carbonsoft.ru 555
 	echo Если не передать аргументов скипт запустится в интерактивном режиме
 	exit 0
 }
@@ -99,14 +99,14 @@ main() {
 	if [ "$#" != 5 ]; then
 		INSTALL_BRANCH=integra
 		INSTALL_VERSION=cur
-		HOST=update5.carbonsoft.ru
+		HOST=update51.carbonsoft.ru
 		PORT=555
 		__get_update_product
 	else
 		INSTALL_PRODUCT=${1:-Billing}
 		INSTALL_BRANCH=${2:-integra}
 		INSTALL_VERSION=${3:-cur}
-		HOST=${4:-update5.carbonsoft.ru}
+		HOST=${4:-update51.carbonsoft.ru}
 		PORT=${5:-555}
 	fi
 
