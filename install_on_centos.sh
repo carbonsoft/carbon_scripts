@@ -6,6 +6,23 @@
 set -eu
 export md5=6c117a0ebff1fe744b781654b9429499
 
+__check_inet() {
+	ping -c 1 8.8.8.8 && ping -c 1 google.ru && return 0
+	echo "# Нет доступа в интернет"
+	echo "# Настройте сеть: http://docs.carbonsoft.ru/x/NgMVAw"
+	echo "# Если сеть настроена, но вы видите это сообщение - свяжитесь с тех. поддержкой CarbonSoft"
+	echo "# Для повторного запуска установки запустите команду $0 $@"
+	exit 15
+}
+
+__check_install_host() {
+	ping -c 1 $HOST && return 0
+	echo "# Не могу пропинговать $HOST, проверьте подключение к сети"
+	echo "# Для повторного запуска установки запустите команду $0 $@"
+	exit 16
+}
+
+
 __install() {
 	GRUBCONF=/boot/grub/grub.conf
 
@@ -94,13 +111,16 @@ usage() {
 
 main() {
 	params="${@//-/}"
-	[ "$params" = 'usage' -o "$params" = 'help' ] && usage
+	[ "${params:-}" = "usage" -o "${params:-}" = "help" ] && usage
+
+	__check_inet "$@"
 
 	if [ "$#" != 5 ]; then
 		INSTALL_BRANCH=integra
 		INSTALL_VERSION=cur
 		HOST=update51.carbonsoft.ru
 		PORT=555
+		__check_install_host "$@"
 		__get_update_product
 	else
 		INSTALL_PRODUCT=${1:-Billing}
@@ -108,6 +128,7 @@ main() {
 		INSTALL_VERSION=${3:-cur}
 		HOST=${4:-update51.carbonsoft.ru}
 		PORT=${5:-555}
+		__check_install_host "$@"
 	fi
 
 	echo Устанавливаю $INSTALL_PRODUCT $INSTALL_BRANCH $INSTALL_VERSION с сервера $HOST:$PORT
