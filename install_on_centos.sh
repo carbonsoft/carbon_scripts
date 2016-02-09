@@ -5,6 +5,7 @@
 
 set -eu
 export md5=6c117a0ebff1fe744b781654b9429499
+export LANG=ru_RU.UTF-8
 
 __check_inet() {
 	ping -c 1 8.8.8.8 && ping -c 1 google.ru && return 0
