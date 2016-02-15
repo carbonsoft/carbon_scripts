@@ -7,22 +7,29 @@ set -eu
 export md5=6c117a0ebff1fe744b781654b9429499
 export LANG=ru_RU.UTF-8
 
+__system_config_network() {
+	echo "# Для настройки сети попробую запустить system-config-network (Нажмите Enter)"
+	read ent
+	system-config-network
+	/etc/init.d/network restart
+}
+
 __check_inet() {
-	ping -c 1 8.8.8.8 && ping -c 1 google.ru && return 0
+	ping -c 1 8.8.8.8 &>/dev/null && ping -c 1 google.ru &>/dev/null && return 0
 	echo "# Нет доступа в интернет"
-	echo "# Настройте сеть: http://docs.carbonsoft.ru/x/NgMVAw"
-	echo "# Если сеть настроена, но вы видите это сообщение - свяжитесь с тех. поддержкой CarbonSoft"
-	echo "# Для повторного запуска установки запустите команду $0 $@"
+	echo "# Настройте сеть в соответствии с документацией CentOS"
+	__system_config_network
+	echo "# Для повторного запуска установки запустите команду $(basename $0) $@"
 	exit 15
 }
 
 __check_install_host() {
-	ping -c 1 $HOST && return 0
+	ping -c 1 $HOST &>/dev/null && return 0
 	echo "# Не могу пропинговать $HOST, проверьте подключение к сети"
-	echo "# Для повторного запуска установки запустите команду $0 $@"
+	__system_config_network
+	echo "# Для повторного запуска установки запустите команду $(basename $0) $@"
 	exit 16
 }
-
 
 __install() {
 	GRUBCONF=/boot/grub/grub.conf
@@ -86,25 +93,41 @@ __install() {
 }
 
 __get_branch_version() {
-	read INSTALL_BRANCH INSTALL_VERSION <<< "$( curl "http://${HOST}:8024/get_version_to_update.php?product=$INSTALL_PRODUCT&cur_branch=$INSTALL_BRANCH")"
+	read INSTALL_BRANCH INSTALL_VERSION <<< "$( curl "http://${HOST}:8024/get_version_to_update.php?product=$INSTALL_PRODUCT&cur_branch=$INSTALL_BRANCH" 2>/dev/null)"
 }
 
 __get_update_product() {
-	curl $HOST:8024/products.list > /tmp/products
+	curl $HOST:8024/products.list 2>/dev/null > /tmp/products
 	num=1
-	echo Выбирите продукт, который хотите установить:
-	while read line; do
-		echo "$num) $line"
+	while read profile descr; do
+		echo "$num) $descr"
 		num=$((1+$num))
 	done < /tmp/products
 
 	selectnum=0
 	while [ "$selectnum" -lt "1" -o "$selectnum" -ge "$num" ]; do
-		echo -n "Введите цифру выбранного продукта(>0 и <$num): "
+		echo -n "Введите номер продукта для установки: "
 		read selectnum
 		[[ "$selectnum" =~ ^[0-9]+$ ]] || selectnum=-100
 	done
 	read INSTALL_PRODUCT descr <<< "$(sed "${selectnum}q;d" /tmp/products)"
+}
+
+__ask_branch() {
+	[ -n "${INSTALL_BRANCH:-}" ] && return 0
+	echo "Выберете какую ветку установить:"
+	echo "1) devel"
+	echo "2) master"
+	echo -n ">> "
+	read INSTALL_BRANCH
+	while [ "$INSTALL_BRANCH" != "1" -a "$INSTALL_BRANCH" != "2" ]; do
+		echo $INSTALL_BRANCH
+		echo "Введите номер 1 для установки devel ветки или 2 для master ветки"
+		echo -n ">> "
+		read INSTALL_BRANCH
+	done
+	INSTALL_BRANCH=${INSTALL_BRANCH//1/devel}
+	INSTALL_BRANCH=${INSTALL_BRANCH//2/master}
 }
 
 usage() {
@@ -121,7 +144,7 @@ main() {
 	__check_inet "$@"
 
 	if [ "$#" != 5 ]; then
-		INSTALL_BRANCH=devel
+		__ask_branch
 		HOST=update51.carbonsoft.ru
 		__get_update_product
 		__get_branch_version
