@@ -1,7 +1,5 @@
 #!/bin/bash
 
-. /usr/local/Reductor/etc/const
-
 ip_regex="([0-9]{1,3}\.){3}[0-9]{1,3}"
 TMPDIR=${TMPDIR:-/tmp}
 TMPFILE=$TMPDIR/hwinfo.tmp
@@ -74,14 +72,6 @@ interrupts() {
 	grep eth /proc/interrupts
 }
 
-config() {
-	echo
-	echo "# config"
-	echo
-	local useless='^(proc|monitoring|misc.diagnostic|reductorupdate.autoupdate_critical)'
-	egrep "'[01]'" $CONFIG | tr -d "']" | tr '[' '.' | sed 's/=/ = /g' | sort -u | egrep -v "$useless"
-}
-
 main() {
 	add_lspci
 	grab_data
@@ -90,7 +80,6 @@ main() {
 	_uptime
 	cpu
 	interrupts
-	config
 }
 
 main | sed -e 's/^[^#$]/    &/g'
