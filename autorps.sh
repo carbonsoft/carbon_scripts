@@ -1,6 +1,12 @@
 #!/bin/bash
 
-dev=${1:-eth1}
+set -eu
+
+if [ "$#" -lt 1 -o "$@" == '--help' -o "$@" == '-h' ]; then
+   echo "Usage: $0 <device>"
+   echo "Example: $0 eth2"
+   exit 1
+fi
 
 queue_count="$(find /sys/class/net/$dev/queues/ -type d -name "rx-*" | wc -l)"
 cpu_count="$(grep -c 'model name' /proc/cpuinfo)"
