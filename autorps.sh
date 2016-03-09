@@ -2,12 +2,13 @@
 
 set -eu
 
-if [ "$#" -lt 1 -o "$@" == '--help' -o "$@" == '-h' ]; then
+if [ "$#" -lt 1 ] || [ "$@" == '--help' ] || [ "$@" == '-h' ]; then
    echo "Usage: $0 <device>"
    echo "Example: $0 eth2"
    exit 1
 fi
 
+dev="$1"
 queue_count="$(find /sys/class/net/$dev/queues/ -type d -name "rx-*" | wc -l)"
 cpu_count="$(grep -c 'model name' /proc/cpuinfo)"
 if [ "$queue_count" == '1' -a "$cpu_count" -gt 1 ]; then
