@@ -16,7 +16,7 @@ check_url() {
         blocked=0
         for i in {1..100}; do
                 printf "\b\b\b\b\b\b\b\b\b\b %3d / 100" $i
-                if [ "$(curl -sS $url)" = '302 Found. Site Block' ]; then
+                if [ "$(curl -sS $url)" = '<head><title>302 Found</title></head>' ]; then
                         _echo " blocked"
                         ((blocked++)) || true
                 else
