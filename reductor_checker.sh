@@ -23,7 +23,7 @@ check_url() {
                         _echo " opened"
                 fi
         done
-        printf "\nblocked $blocked times\n"
+        printf "\nblocked $blocked/100 times\n"
 }
 
 VERBOSE=0
