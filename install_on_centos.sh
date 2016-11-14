@@ -66,11 +66,9 @@ __install() {
 		done
 	done &>> /var/log/crb_first_start.log
 
-	for action in start setup; do
-		for app in base auth $(</tmp/app_list); do
-			echo Выполняю $app $action
-			/app/$app/service $action || true
-		done
+	for app in base auth $(</tmp/app_list); do
+		echo Выполняю $app start
+		/app/$app/service start || true
 	done
 	[ -d '/app/asr_billing/' ] && rsync -a -v -r /app/asr_billing/{skelet/var/lib/firebird/system/,/var/lib/firebird/system}
 	mkdir -p /app/base/var/reg/
@@ -83,6 +81,12 @@ __install() {
 	/app/base/usr/local/bin/update.sh $INSTALL_PRODUCT $INSTALL_BRANCH $INSTALL_VERSION --skipcheck --update-server $HOST:$PORT || true
 	/app/base/usr/local/bin/update.sh $INSTALL_PRODUCT $INSTALL_BRANCH $INSTALL_VERSION --skipcheck --update-server $HOST:$PORT  #dont ask why :C
 
+	echo "# Запускаем специфические настройки для каждого контейнера"
+	for app in base auth $(</tmp/app_list); do
+		echo Выполняю $app setup
+		/app/$app/service setup || true
+	done
+	
 	echo "# Отключаем selinux в grub + делаем бэкап конфига)"
 	cat $GRUBCONF > $GRUBCONF.$(md5sum $GRUBCONF | cut -d ' ' -f1)
 	while IFS= read line; do
