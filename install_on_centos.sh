@@ -58,8 +58,17 @@ __install() {
 
 	echo "# рестартанём все контейнеры один раз чтобы обновление работало"
 
+	echo > /var/log/crb_first_start.log
 	for app in base auth $(</tmp/app_list); do
-		for action in stop destroy build start; do
+		for action in stop destroy build; do
+			echo Выполняю $app $action
+			/app/$app/service $action || true
+		done
+	done &>> /var/log/crb_first_start.log
+
+	for action in start setup; do
+		for app in base auth $(</tmp/app_list); do
+			echo Выполняю $app $action
 			/app/$app/service $action || true
 		done
 	done
