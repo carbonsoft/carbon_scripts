@@ -166,6 +166,8 @@ __install() {
 
 	update_issue_and_motd
 
+	/app/base/usr/local/bin/installation_wizard
+
 	# workaround для бага с непоказом страницы в самый <первый раз
 	curl -D- http://169.254.80.81:8081/auth/getcompanyname/ &>/dev/null || true
 
