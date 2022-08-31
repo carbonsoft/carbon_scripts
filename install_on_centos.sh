@@ -456,12 +456,17 @@ main() {
 	params="${@//-/}"
 	[ "${params:-}" = "usage" -o "${params:-}" = "help" ] && usage
 
-	# исправляем ссылку на репозитарий
-	[[ ! -s /etc/yum/vars/releasever ]] \
-		&& echo "$(sed 's/.* release \(6.[0-9]\+\) .*/\1/;t;d' /etc/centos-release)" \
-		> /etc/yum/vars/releasever
-	sed -i 's/^mirrorlist/#mirrorlist/;s/^#baseurl/baseurl/;s/mirror.centos.org\/centos/vault.centos.org/' \
-		/etc/yum.repos.d/CentOS-Base.repo
+	if [[ -s /etc/centos-release ]]; then
+		# исправляем ссылку на репозитарий
+		[[ ! -s /etc/yum/vars/releasever ]] \
+			&& echo "$(sed 's/.* release \(6.[0-9]\+\) .*/\1/;t;d' /etc/centos-release)" \
+			> /etc/yum/vars/releasever
+		sed -i 's/^mirrorlist/#mirrorlist/;s/^#baseurl/baseurl/;s/mirror.centos.org\/centos/vault.centos.org/' \
+			/etc/yum.repos.d/CentOS-Base.repo
+	elif [[ -s /etc/rosa-release ]]; then
+		# ROSA использует свои репозитории, исправление не требуется
+		:
+	fi
 
 	yum_install "system-config-network-tui" || true
 	__check_network "$@"
